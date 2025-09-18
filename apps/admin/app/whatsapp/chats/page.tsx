@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -51,6 +51,9 @@ export default function WhatsAppChatsPage() {
 
     // Socket.io integration
     const { socket, connected, joinConversation, leaveConversation } = useChatSocket();
+
+    // Auto-scroll ref
+    const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // Fetch conversations
     const fetchConversations = async () => {
@@ -116,6 +119,8 @@ export default function WhatsAppChatsPage() {
                 await fetchMessages(selectedConversation.id);
                 // Refresh conversations to update last message time
                 await fetchConversations();
+                // Auto-scroll to bottom after sending
+                setTimeout(() => scrollToBottom(), 100);
             } else {
                 console.error('Failed to send message:', data.error);
             }
@@ -149,6 +154,16 @@ export default function WhatsAppChatsPage() {
     const formatPhoneNumber = (phone: string) => {
         return phone.replace(/(\d{2})(\d{3})(\d{3})(\d{4})/, '+$1 $2 $3 $4');
     };
+
+    // Auto-scroll to bottom
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    // Auto-scroll when messages change
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
 
     // Load initial data
     useEffect(() => {
@@ -370,38 +385,42 @@ export default function WhatsAppChatsPage() {
                                             No messages in this conversation
                                         </div>
                                     ) : (
-                                        messages.map((message) => (
-                                            <div
-                                                key={message.id}
-                                                className={`flex ${message.direction === 'outgoing' ? 'justify-end' : 'justify-start'
-                                                    }`}
-                                            >
+                                        <>
+                                            {messages.map((message) => (
                                                 <div
-                                                    className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${message.direction === 'outgoing'
-                                                        ? 'bg-primary text-primary-foreground'
-                                                        : 'bg-muted'
+                                                    key={message.id}
+                                                    className={`flex ${message.direction === 'outgoing' ? 'justify-end' : 'justify-start'
                                                         }`}
                                                 >
-                                                    <div className="text-sm">{message.content}</div>
                                                     <div
-                                                        className={`text-xs mt-1 ${message.direction === 'outgoing'
-                                                            ? 'text-primary-foreground/70'
-                                                            : 'text-muted-foreground'
+                                                        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${message.direction === 'outgoing'
+                                                            ? 'bg-primary text-primary-foreground'
+                                                            : 'bg-muted'
                                                             }`}
                                                     >
-                                                        {formatTimestamp(message.timestamp)}
-                                                        {message.direction === 'outgoing' && (
-                                                            <span className="ml-2">
-                                                                {message.status === 'sent' && '✓'}
-                                                                {message.status === 'delivered' && '✓✓'}
-                                                                {message.status === 'read' && '✓✓ (blue)'}
-                                                                {message.status === 'failed' && '✗'}
-                                                            </span>
-                                                        )}
+                                                        <div className="text-sm">{message.content}</div>
+                                                        <div
+                                                            className={`text-xs mt-1 ${message.direction === 'outgoing'
+                                                                ? 'text-primary-foreground/70'
+                                                                : 'text-muted-foreground'
+                                                                }`}
+                                                        >
+                                                            {formatTimestamp(message.timestamp)}
+                                                            {message.direction === 'outgoing' && (
+                                                                <span className="ml-2">
+                                                                    {message.status === 'sent' && '✓'}
+                                                                    {message.status === 'delivered' && '✓✓'}
+                                                                    {message.status === 'read' && '✓✓ (blue)'}
+                                                                    {message.status === 'failed' && '✗'}
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        ))
+                                            ))}
+                                            {/* Auto-scroll anchor */}
+                                            <div ref={messagesEndRef} />
+                                        </>
                                     )}
                                 </div>
 
