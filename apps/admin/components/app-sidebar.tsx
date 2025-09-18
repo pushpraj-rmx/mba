@@ -52,21 +52,21 @@ const data = {
   ],
   navMain: [
     {
-      title: "Playground",
+      title: "WhatsApp",
       url: "#",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: "Templates",
+          url: "/whatsapp/templates",
         },
         {
-          title: "Starred",
-          url: "#",
+          title: "Chats",
+          url: "/chat",
         },
         {
-          title: "Settings",
+          title: "Contacts",
           url: "#",
         },
       ],

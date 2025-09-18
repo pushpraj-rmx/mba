@@ -4,6 +4,16 @@ export default function Home() {
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+            <div className="bg-black/50 aspect-video rounded-xl" />
+            <div className="bg-black/50 aspect-video rounded-xl" />
+            <div className="bg-black/50 aspect-video rounded-xl" />
+          </div>
+          <div className="bg-black/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
+        </div>
+
         <Image
           className="dark:invert"
           src="/next.svg"
